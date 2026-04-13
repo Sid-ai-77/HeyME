@@ -802,7 +802,7 @@
 
 
 <!-- ═══════════ LOGIN/REGISTER SCREEN ═══════════ -->
-<div class="screen active" id="screen-auth" style="overflow-y:auto;">
+<div class="screen" id="screen-auth" style="overflow-y:auto;">
     <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:30px 24px;">
         <!-- Logo -->
         <div style="margin-bottom:30px;text-align:center;">
@@ -881,9 +881,10 @@
 </div>
 
 <!-- ═══════════ HOME SCREEN ═══════════ -->
-<div class="screen" id="screen-home">
+<div class="screen active" id="screen-home">
     <div class="top-nav">
         <span style="font-size:1.4rem;font-weight:900;background:linear-gradient(135deg,#8B5CF6,#F472B6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-0.5px;">HeyME</span>
+        <button onclick="checkAuthAndAct('login')" id="loginBtn" style="background:transparent;border:1px solid var(--border);color:var(--text-muted);padding:6px 12px;border-radius:50px;font-size:0.75rem;cursor:pointer;margin-right:6px;">로그인</button>
         <div class="credits-badge" onclick="showScreen('screen-shop')">
             <span class="coin">C</span>
             <span id="home-credits">50</span>
@@ -1056,6 +1057,10 @@
     <div class="nav-item" data-screen="screen-shop" onclick="navTo('screen-shop')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
         크레딧
+    </div>
+    <div class="nav-item" onclick="window.location.href='find-game.html'">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="6 3 20 12 6 21 6 3"/></svg>
+        게임
     </div>
     <div class="nav-item" data-screen="screen-my" onclick="navTo('screen-my')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -1732,8 +1737,6 @@ function socialLogin(provider) {
 firebase.auth().onAuthStateChanged(function(user) {
     if (user) {
         // Already logged in
-        document.getElementById('screen-auth').classList.remove('active');
-        document.getElementById('screen-home').classList.add('active');
         // Load profile
         firebase.database().ref('heyme_users/' + user.uid).once('value', function(snap) {
             var profile = snap.val();
@@ -1880,6 +1883,33 @@ function getSmartResponse(userMsg, char) {
     // Default: use original responses
     return responses[Math.floor(Math.random() * responses.length)];
 }
+
+
+// Check if user must login for action
+function checkAuthAndAct(action, callback) {
+    var user = firebase.auth().currentUser;
+    if (user) {
+        // Already logged in
+        if (action === 'login') {
+            // Show profile/logout option
+            if (confirm('로그아웃 하시겠습니까?')) {
+                firebase.auth().signOut();
+                location.reload();
+            }
+        } else if (callback) callback();
+    } else {
+        // Show auth screen
+        showScreen('screen-auth');
+    }
+}
+
+// Update login button text based on auth state
+firebase.auth().onAuthStateChanged(function(user) {
+    var btn = document.getElementById('loginBtn');
+    if (btn) {
+        btn.textContent = user ? (user.email ? user.email.split('@')[0] : 'MY') : '로그인';
+    }
+});
 
 // ═══════════ INIT ═══════════
 function init() {
