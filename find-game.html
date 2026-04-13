@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+<title>캐릭터를 찾아라! - HeyME</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #0A0A10;
+  --bg2: #12121C;
+  --primary: #8B5CF6;
+  --primary-glow: rgba(139, 92, 246, 0.3);
+  --success: #22C55E;
+  --danger: #EF4444;
+  --warning: #F59E0B;
+  --text: #EEEEF0;
+  --text-dim: #8888A0;
+  --surface: #1A1A2E;
+  --surface2: #252540;
+}
+
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  font-family: 'Inter', -apple-system, sans-serif;
+  color: var(--text);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: none;
+}
+
+#app {
+  width: 100%; height: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===== START SCREEN ===== */
+#startScreen {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  background: var(--bg);
+  z-index: 100;
+  padding: 24px;
+}
+
+.logo-text {
+  font-size: 14px; font-weight: 700;
+  color: var(--primary);
+  letter-spacing: 3px;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.start-title {
+  font-size: 32px; font-weight: 900;
+  background: linear-gradient(135deg, var(--primary), #C084FC, #E879F9);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.start-subtitle {
+  font-size: 14px; color: var(--text-dim);
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+.character-preview {
+  display: flex; gap: 12px;
+  margin-bottom: 40px;
+}
+
+.character-preview .char-thumb {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--surface2);
+  transition: transform 0.3s;
+}
+
+.character-preview .char-thumb:nth-child(1) { animation: floatA 3s ease-in-out infinite; }
+.character-preview .char-thumb:nth-child(2) { animation: floatA 3s ease-in-out 0.5s infinite; }
+.character-preview .char-thumb:nth-child(3) { animation: floatA 3s ease-in-out 1s infinite; }
+.character-preview .char-thumb:nth-child(4) { animation: floatA 3s ease-in-out 1.5s infinite; }
+
+@keyframes floatA {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.daily-counter {
+  font-size: 13px;
+  color: var(--text-dim);
+  margin-bottom: 16px;
+  background: var(--surface);
+  padding: 8px 20px;
+  border-radius: 20px;
+}
+
+.daily-counter span { color: var(--primary); font-weight: 700; }
+
+.btn-start {
+  background: linear-gradient(135deg, var(--primary), #7C3AED);
+  color: #fff;
+  border: none;
+  padding: 16px 48px;
+  border-radius: 16px;
+  font-size: 18px; font-weight: 700;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  box-shadow: 0 4px 24px var(--primary-glow);
+}
+.btn-start:active { transform: scale(0.96); }
+.btn-start:disabled {
+  opacity: 0.4; cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* ===== MISSION SCREEN ===== */
+#missionScreen {
+  position: absolute; inset: 0;
+  display: none; flex-direction: column;
+  align-items: center; justify-content: center;
+  background: var(--bg);
+  z-index: 90;
+  padding: 24px;
+}
+
+.mission-face {
+  width: 120px; height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid var(--primary);
+  box-shadow: 0 0 40px var(--primary-glow);
+  margin-bottom: 24px;
+  animation: missionPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes missionPulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 40px var(--primary-glow); }
+  50% { transform: scale(1.05); box-shadow: 0 0 60px rgba(139,92,246,0.5); }
+}
+
+.mission-text {
+  font-size: 28px; font-weight: 800;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.mission-name {
+  color: var(--primary);
+}
+
+.mission-hint {
+  font-size: 14px; color: var(--text-dim);
+  margin-bottom: 32px;
+}
+
+.countdown-num {
+  font-size: 64px; font-weight: 900;
+  color: var(--primary);
+  animation: countBounce 0.5s ease;
+}
+
+@keyframes countBounce {
+  0% { transform: scale(1.5); opacity: 0; }
+  50% { transform: scale(0.9); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* ===== GAME SCREEN ===== */
+#gameScreen {
+  position: absolute; inset: 0;
+  display: none; flex-direction: column;
+  background: var(--bg);
+  z-index: 80;
+}
+
+.game-hud {
+  position: relative; z-index: 10;
+  display: flex; align-items: center;
+  padding: 8px 12px;
+  background: rgba(10,10,16,0.92);
+  backdrop-filter: blur(12px);
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.hud-face {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--primary);
+  flex-shrink: 0;
+}
+
+.hud-info {
+  flex: 1; min-width: 0;
+}
+
+.hud-name {
+  font-size: 13px; font-weight: 700;
+}
+
+.hud-find {
+  font-size: 11px; color: var(--text-dim);
+}
+
+.hud-timer {
+  font-size: 24px; font-weight: 800;
+  color: var(--success);
+  min-width: 44px; text-align: right;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.hud-timer.warning { color: var(--warning); }
+.hud-timer.danger { color: var(--danger); animation: timerPulse 0.5s ease infinite; }
+
+@keyframes timerPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.timer-bar-wrap {
+  height: 4px;
+  background: var(--surface);
+  flex-shrink: 0;
+}
+
+.timer-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--success), var(--success));
+  width: 100%;
+  transition: width 0.1s linear;
+  border-radius: 0 2px 2px 0;
+}
+
+.timer-bar.warning { background: linear-gradient(90deg, var(--warning), #FBBF24); }
+.timer-bar.danger { background: linear-gradient(90deg, var(--danger), #F87171); }
+
+.game-area {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  cursor: crosshair;
+}
+
+.game-viewport {
+  position: absolute;
+  top: 0; left: 0;
+  width: 200%; height: 100%;
+  min-height: 100%;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.game-bg {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.hidden-char {
+  position: absolute;
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  object-fit: cover;
+  opacity: 0.72;
+  pointer-events: none;
+  filter: brightness(0.85) saturate(0.9);
+  box-shadow: 0 0 6px rgba(0,0,0,0.5);
+  transform: translate(-50%, -50%);
+}
+
+/* Tap markers */
+.tap-marker {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 20;
+}
+
+.tap-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.25);
+  position: absolute;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 19;
+}
+
+.marker-wrong {
+  width: 28px; height: 28px;
+  position: relative;
+  animation: wrongFade 0.5s ease forwards;
+}
+
+.marker-wrong::before, .marker-wrong::after {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 24px; height: 3px;
+  background: var(--danger);
+  border-radius: 2px;
+}
+.marker-wrong::before { transform: translate(-50%,-50%) rotate(45deg); }
+.marker-wrong::after { transform: translate(-50%,-50%) rotate(-45deg); }
+
+@keyframes wrongFade {
+  0% { opacity: 1; transform: scale(1.2); }
+  70% { opacity: 1; }
+  100% { opacity: 0; transform: scale(0.8); }
+}
+
+.marker-correct {
+  width: 52px; height: 52px;
+  border: 3px solid var(--danger);
+  border-radius: 50%;
+  animation: correctPulse 1s ease infinite;
+}
+
+@keyframes correctPulse {
+  0%, 100% { transform: translate(-50%,-50%) scale(1); opacity: 1; }
+  50% { transform: translate(-50%,-50%) scale(1.2); opacity: 0.6; }
+}
+
+/* ===== RESULT SCREEN ===== */
+#resultScreen {
+  position: absolute; inset: 0;
+  display: none; flex-direction: column;
+  align-items: center; justify-content: center;
+  background: rgba(10,10,16,0.95);
+  backdrop-filter: blur(16px);
+  z-index: 85;
+  padding: 24px;
+}
+
+.result-face {
+  width: 100px; height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 20px;
+}
+
+.result-face.found {
+  border: 4px solid var(--success);
+  box-shadow: 0 0 40px rgba(34,197,94,0.3);
+  animation: resultBounce 0.6s ease;
+}
+
+.result-face.notfound {
+  border: 4px solid var(--text-dim);
+  filter: grayscale(0.5);
+}
+
+@keyframes resultBounce {
+  0% { transform: scale(0); }
+  60% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+.result-title {
+  font-size: 28px; font-weight: 900;
+  margin-bottom: 8px;
+}
+
+.result-title.found { color: var(--success); }
+.result-title.notfound { color: var(--text-dim); }
+
+.result-sub {
+  font-size: 14px; color: var(--text-dim);
+  margin-bottom: 24px;
+}
+
+.result-credits {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--surface);
+  padding: 12px 24px;
+  border-radius: 16px;
+  margin-bottom: 32px;
+}
+
+.credits-icon {
+  font-size: 24px;
+}
+
+.credits-num {
+  font-size: 28px; font-weight: 800;
+  color: var(--warning);
+}
+
+.credits-label {
+  font-size: 13px; color: var(--text-dim);
+}
+
+.result-time {
+  font-size: 13px; color: var(--text-dim);
+  margin-bottom: 24px;
+}
+
+.result-btns {
+  display: flex; gap: 12px;
+  width: 100%;
+  max-width: 320px;
+}
+
+.btn-result {
+  flex: 1;
+  padding: 14px 16px;
+  border-radius: 12px;
+  font-size: 15px; font-weight: 700;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  border: none;
+  transition: transform 0.15s;
+}
+.btn-result:active { transform: scale(0.96); }
+
+.btn-again {
+  background: linear-gradient(135deg, var(--primary), #7C3AED);
+  color: #fff;
+}
+
+.btn-main {
+  background: var(--surface2);
+  color: var(--text);
+}
+
+/* ===== ANIMATIONS ===== */
+.screen-enter {
+  animation: screenIn 0.4s ease;
+}
+
+@keyframes screenIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.hidden { display: none !important; }
+
+/* Scrollbar hide */
+::-webkit-scrollbar { display: none; }
+</style>
+</head>
+<body>
+
+<div id="app">
+  <!-- START -->
+  <div id="startScreen">
+    <div class="logo-text">HeyME</div>
+    <div class="start-title">캐릭터를 찾아라!</div>
+    <div class="start-subtitle">숨어있는 캐릭터를 시간 안에 찾으세요</div>
+    <div class="character-preview">
+      <img class="char-thumb" src="char1_face.jpg" alt="강윤재">
+      <img class="char-thumb" src="char2_face.jpg" alt="도현우">
+      <img class="char-thumb" src="char3_face.jpg" alt="서아린">
+      <img class="char-thumb" src="char4_face.jpg" alt="유하나">
+    </div>
+    <div class="daily-counter">오늘 남은 기회: <span id="dailyCount">3</span>/3</div>
+    <button class="btn-start" id="btnStart" onclick="startGame()">게임 시작</button>
+  </div>
+
+  <!-- MISSION -->
+  <div id="missionScreen">
+    <img class="mission-face" id="missionFace" src="" alt="">
+    <div class="mission-text"><span class="mission-name" id="missionName"></span>를 찾아라!</div>
+    <div class="mission-hint">화면을 탐색하여 캐릭터를 찾으세요</div>
+    <div class="countdown-num" id="countdownNum">3</div>
+  </div>
+
+  <!-- GAME -->
+  <div id="gameScreen">
+    <div class="game-hud">
+      <img class="hud-face" id="hudFace" src="" alt="">
+      <div class="hud-info">
+        <div class="hud-name" id="hudName"></div>
+        <div class="hud-find">를 찾으세요!</div>
+      </div>
+      <div class="hud-timer" id="hudTimer">15</div>
+    </div>
+    <div class="timer-bar-wrap">
+      <div class="timer-bar" id="timerBar"></div>
+    </div>
+    <div class="game-area" id="gameArea">
+      <div class="game-viewport" id="gameViewport">
+        <img class="game-bg" id="gameBg" src="" alt="">
+        <img class="hidden-char" id="hiddenChar" src="" alt="">
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div id="resultScreen">
+    <img class="result-face" id="resultFace" src="" alt="">
+    <div class="result-title" id="resultTitle"></div>
+    <div class="result-sub" id="resultSub"></div>
+    <div class="result-time" id="resultTime"></div>
+    <div class="result-credits" id="resultCredits">
+      <div class="credits-icon">&#11088;</div>
+      <div>
+        <div class="credits-num" id="creditsNum">+0</div>
+        <div class="credits-label">크레딧 획득</div>
+      </div>
+    </div>
+    <div class="result-btns">
+      <button class="btn-result btn-main" onclick="goMain()">메인으로</button>
+      <button class="btn-result btn-again" id="btnAgain" onclick="startGame()">다시 하기</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== DATA =====
+const CHARACTERS = [
+  { id: 'char1', name: '강윤재', face: 'char1_face.jpg', hide: 'find_char1.png' },
+  { id: 'char2', name: '도현우', face: 'char2_face.jpg', hide: 'find_char2.png' },
+  { id: 'char3', name: '서아린', face: 'char3_face.jpg', hide: 'find_char3.png' },
+  { id: 'char4', name: '유하나', face: 'char4_face.jpg', hide: 'find_char4.png' },
+];
+
+const BACKGROUNDS = [
+  { file: 'find_bg1.jpg', spots: [
+    { x: 22, y: 35 }, { x: 68, y: 55 }, { x: 45, y: 72 }
+  ]},
+  { file: 'find_bg2.jpg', spots: [
+    { x: 75, y: 40 }, { x: 30, y: 65 }, { x: 55, y: 28 }
+  ]},
+  { file: 'find_bg3.jpg', spots: [
+    { x: 18, y: 50 }, { x: 60, y: 38 }, { x: 82, y: 68 }
+  ]},
+  { file: 'find_bg4.jpg', spots: [
+    { x: 40, y: 30 }, { x: 72, y: 60 }, { x: 25, y: 75 }
+  ]},
+  { file: 'find_bg5.jpg', spots: [
+    { x: 55, y: 45 }, { x: 20, y: 58 }, { x: 78, y: 32 }
+  ]},
+];
+
+const GAME_TIME = 15;
+const HIT_RADIUS = 30; // px radius for correct tap detection
+const DAILY_LIMIT = 3;
+
+// ===== STATE =====
+let currentChar = null;
+let currentBg = null;
+let currentSpot = null;
+let timeLeft = GAME_TIME;
+let timerInterval = null;
+let gameActive = false;
+let foundTime = null;
+
+// Viewport panning
+let vpX = 0;
+let panStartX = 0;
+let panStartVpX = 0;
+let isPanning = false;
+let panMoved = false;
+
+// Audio
+let audioCtx = null;
+let bgmOsc1 = null, bgmOsc2 = null, bgmGain = null;
+let bgmInterval = null;
+
+// ===== DAILY LIMIT =====
+function getTodayKey() {
+  return 'findgame_' + new Date().toISOString().slice(0, 10);
+}
+
+function getPlaysToday() {
+  return parseInt(localStorage.getItem(getTodayKey()) || '0');
+}
+
+function addPlay() {
+  const plays = getPlaysToday() + 1;
+  localStorage.setItem(getTodayKey(), plays);
+  return plays;
+}
+
+function getRemainingPlays() {
+  return Math.max(0, DAILY_LIMIT - getPlaysToday());
+}
+
+function updateDailyUI() {
+  const remaining = getRemainingPlays();
+  document.getElementById('dailyCount').textContent = remaining;
+  document.getElementById('btnStart').disabled = remaining <= 0;
+  document.getElementById('btnAgain').disabled = remaining <= 0;
+  if (remaining <= 0) {
+    document.getElementById('btnStart').textContent = '오늘은 다 했어요!';
+  } else {
+    document.getElementById('btnStart').textContent = '게임 시작';
+  }
+}
+
+// ===== CREDITS =====
+function getTotalCredits() {
+  return parseInt(localStorage.getItem('findgame_credits') || '0');
+}
+
+function addCredits(amount) {
+  const total = getTotalCredits() + amount;
+  localStorage.setItem('findgame_credits', total);
+  return total;
+}
+
+// ===== AUDIO ENGINE =====
+function initAudio() {
+  if (audioCtx) return;
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+}
+
+function playNote(freq, duration, type = 'sine', volume = 0.15, startTime = 0) {
+  if (!audioCtx) return;
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = type;
+  osc.frequency.value = freq;
+  gain.gain.setValueAtTime(volume, audioCtx.currentTime + startTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + startTime + duration);
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  osc.start(audioCtx.currentTime + startTime);
+  osc.stop(audioCtx.currentTime + startTime + duration);
+}
+
+function playWrongSound() {
+  playNote(200, 0.2, 'square', 0.1);
+  playNote(150, 0.15, 'square', 0.08, 0.05);
+}
+
+function playFoundSound() {
+  playNote(523, 0.15, 'sine', 0.15, 0);
+  playNote(659, 0.15, 'sine', 0.15, 0.12);
+  playNote(784, 0.15, 'sine', 0.15, 0.24);
+  playNote(1047, 0.4, 'sine', 0.2, 0.36);
+  // chord
+  playNote(523, 0.5, 'triangle', 0.08, 0.36);
+  playNote(659, 0.5, 'triangle', 0.08, 0.36);
+  playNote(784, 0.5, 'triangle', 0.08, 0.36);
+}
+
+function playTimeUpSound() {
+  playNote(784, 0.2, 'sine', 0.12, 0);
+  playNote(659, 0.2, 'sine', 0.12, 0.15);
+  playNote(523, 0.2, 'sine', 0.12, 0.3);
+  playNote(392, 0.5, 'sine', 0.1, 0.45);
+}
+
+function playWarningBeep() {
+  playNote(880, 0.08, 'square', 0.08);
+}
+
+function startBGM() {
+  if (!audioCtx) return;
+  stopBGM();
+  bgmGain = audioCtx.createGain();
+  bgmGain.gain.value = 0.04;
+  bgmGain.connect(audioCtx.destination);
+
+  let beat = 0;
+  const baseTempo = 200;
+  const notes = [330, 392, 440, 392, 330, 294, 330, 440];
+
+  bgmInterval = setInterval(() => {
+    if (!audioCtx || !gameActive) { stopBGM(); return; }
+    const tempo = timeLeft <= 5 ? baseTempo * 0.6 : baseTempo;
+    const vol = timeLeft <= 5 ? 0.07 : 0.04;
+
+    const osc = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    osc.type = timeLeft <= 5 ? 'square' : 'triangle';
+    osc.frequency.value = notes[beat % notes.length];
+    g.gain.setValueAtTime(vol, audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.12);
+    osc.connect(g);
+    g.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.12);
+    beat++;
+
+    clearInterval(bgmInterval);
+    bgmInterval = setInterval(arguments.callee, tempo);
+  }, baseTempo);
+}
+
+function stopBGM() {
+  if (bgmInterval) { clearInterval(bgmInterval); bgmInterval = null; }
+}
+
+// ===== SCREENS =====
+function showScreen(id) {
+  ['startScreen', 'missionScreen', 'gameScreen', 'resultScreen'].forEach(s => {
+    const el = document.getElementById(s);
+    el.style.display = s === id ? 'flex' : 'none';
+  });
+}
+
+// ===== GAME FLOW =====
+function startGame() {
+  if (getRemainingPlays() <= 0) return;
+  initAudio();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+
+  // Pick random char and background
+  currentChar = CHARACTERS[Math.floor(Math.random() * CHARACTERS.length)];
+  currentBg = BACKGROUNDS[Math.floor(Math.random() * BACKGROUNDS.length)];
+  currentSpot = currentBg.spots[Math.floor(Math.random() * currentBg.spots.length)];
+
+  // Show mission
+  document.getElementById('missionFace').src = currentChar.face;
+  document.getElementById('missionName').textContent = currentChar.name;
+  showScreen('missionScreen');
+
+  // Countdown 3-2-1
+  let count = 3;
+  const countEl = document.getElementById('countdownNum');
+  countEl.textContent = count;
+  countEl.style.animation = 'none';
+  void countEl.offsetWidth;
+  countEl.style.animation = 'countBounce 0.5s ease';
+
+  const cInterval = setInterval(() => {
+    count--;
+    if (count <= 0) {
+      clearInterval(cInterval);
+      launchGame();
+    } else {
+      countEl.textContent = count;
+      countEl.style.animation = 'none';
+      void countEl.offsetWidth;
+      countEl.style.animation = 'countBounce 0.5s ease';
+      playNote(600 + (3 - count) * 100, 0.12, 'sine', 0.1);
+    }
+  }, 800);
+
+  playNote(600, 0.12, 'sine', 0.1);
+}
+
+function launchGame() {
+  addPlay();
+  updateDailyUI();
+
+  // Setup HUD
+  document.getElementById('hudFace').src = currentChar.face;
+  document.getElementById('hudName').textContent = currentChar.name;
+
+  // Setup background
+  const viewport = document.getElementById('gameViewport');
+  document.getElementById('gameBg').src = currentBg.file;
+
+  // Place hidden character
+  const hc = document.getElementById('hiddenChar');
+  hc.src = currentChar.hide;
+  hc.style.left = currentSpot.x + '%';
+  hc.style.top = currentSpot.y + '%';
+
+  // Clear old markers
+  viewport.querySelectorAll('.tap-marker, .tap-dot').forEach(m => m.remove());
+
+  // Reset viewport pan
+  vpX = 0;
+  viewport.style.transform = `translateX(0px)`;
+
+  // Reset timer
+  timeLeft = GAME_TIME;
+  gameActive = true;
+  foundTime = null;
+  updateTimerUI();
+
+  showScreen('gameScreen');
+  startBGM();
+
+  // Start timer
+  const startTs = Date.now();
+  timerInterval = setInterval(() => {
+    const elapsed = (Date.now() - startTs) / 1000;
+    timeLeft = Math.max(0, GAME_TIME - elapsed);
+    updateTimerUI();
+
+    if (timeLeft <= 5 && timeLeft > 4.9 && Math.floor(timeLeft * 10) % 10 === 0) {
+      playWarningBeep();
+    }
+
+    if (timeLeft <= 0) {
+      gameOver(false);
+    }
+  }, 50);
+}
+
+function updateTimerUI() {
+  const display = Math.ceil(timeLeft);
+  const timerEl = document.getElementById('hudTimer');
+  const barEl = document.getElementById('timerBar');
+  const pct = (timeLeft / GAME_TIME) * 100;
+
+  timerEl.textContent = display;
+  barEl.style.width = pct + '%';
+
+  timerEl.classList.remove('warning', 'danger');
+  barEl.classList.remove('warning', 'danger');
+
+  if (timeLeft <= 5) {
+    timerEl.classList.add('danger');
+    barEl.classList.add('danger');
+  } else if (timeLeft <= 10) {
+    timerEl.classList.add('warning');
+    barEl.classList.add('warning');
+  }
+}
+
+function gameOver(found) {
+  gameActive = false;
+  clearInterval(timerInterval);
+  stopBGM();
+
+  if (found) {
+    foundTime = GAME_TIME - timeLeft;
+    playFoundSound();
+  } else {
+    playTimeUpSound();
+  }
+
+  setTimeout(() => showResult(found), found ? 600 : 400);
+}
+
+function showResult(found) {
+  const face = document.getElementById('resultFace');
+  const title = document.getElementById('resultTitle');
+  const sub = document.getElementById('resultSub');
+  const timeEl = document.getElementById('resultTime');
+  const creditsEl = document.getElementById('creditsNum');
+
+  face.src = currentChar.face;
+  face.className = 'result-face ' + (found ? 'found' : 'notfound');
+  title.className = 'result-title ' + (found ? 'found' : 'notfound');
+
+  let credits = 0;
+  if (found) {
+    title.textContent = '찾았다!';
+    sub.textContent = currentChar.name + '를 발견했어요!';
+    timeEl.textContent = '소요 시간: ' + foundTime.toFixed(1) + '초';
+
+    if (foundTime <= 5) credits = 10;
+    else if (foundTime <= 10) credits = 5;
+    else credits = 3;
+  } else {
+    title.textContent = '아쉽지만 다음에!';
+    sub.textContent = currentChar.name + '를 찾지 못했어요...';
+    timeEl.textContent = '시간 초과';
+    credits = 0;
+  }
+
+  if (credits > 0) addCredits(credits);
+  creditsEl.textContent = '+' + credits;
+  document.getElementById('resultCredits').style.display = credits > 0 ? 'flex' : 'none';
+
+  showScreen('resultScreen');
+  updateDailyUI();
+}
+
+function goMain() {
+  showScreen('startScreen');
+  updateDailyUI();
+}
+
+// ===== TOUCH / CLICK HANDLING =====
+const gameArea = document.getElementById('gameArea');
+const viewport = document.getElementById('gameViewport');
+
+let touchStartTime = 0;
+
+function onPointerDown(e) {
+  if (!gameActive) return;
+  const touch = e.touches ? e.touches[0] : e;
+  panStartX = touch.clientX;
+  panStartVpX = vpX;
+  isPanning = true;
+  panMoved = false;
+  touchStartTime = Date.now();
+}
+
+function onPointerMove(e) {
+  if (!isPanning || !gameActive) return;
+  const touch = e.touches ? e.touches[0] : e;
+  const dx = touch.clientX - panStartX;
+  if (Math.abs(dx) > 5) panMoved = true;
+
+  const areaWidth = gameArea.clientWidth;
+  const vpWidth = viewport.clientWidth;
+  const maxPan = vpWidth - areaWidth;
+
+  vpX = Math.max(-maxPan, Math.min(0, panStartVpX + dx));
+  viewport.style.transform = `translateX(${vpX}px)`;
+}
+
+function onPointerUp(e) {
+  if (!gameActive) { isPanning = false; return; }
+  isPanning = false;
+
+  // If it was a tap (not a pan)
+  if (!panMoved && Date.now() - touchStartTime < 300) {
+    const touch = e.changedTouches ? e.changedTouches[0] : e;
+    handleTap(touch.clientX, touch.clientY);
+  }
+}
+
+function handleTap(clientX, clientY) {
+  if (!gameActive) return;
+
+  const areaRect = gameArea.getBoundingClientRect();
+  const vpRect = viewport.getBoundingClientRect();
+
+  // Position relative to viewport
+  const tapVpX = clientX - vpRect.left;
+  const tapVpY = clientY - vpRect.top;
+
+  // Character position in viewport pixels
+  const charPxX = (currentSpot.x / 100) * viewport.clientWidth;
+  const charPxY = (currentSpot.y / 100) * viewport.clientHeight;
+
+  const dist = Math.sqrt((tapVpX - charPxX) ** 2 + (tapVpY - charPxY) ** 2);
+
+  // Add dot marker
+  const dot = document.createElement('div');
+  dot.className = 'tap-dot';
+  dot.style.left = tapVpX + 'px';
+  dot.style.top = tapVpY + 'px';
+  viewport.appendChild(dot);
+
+  if (dist <= HIT_RADIUS) {
+    // CORRECT!
+    const marker = document.createElement('div');
+    marker.className = 'tap-marker marker-correct';
+    marker.style.left = charPxX + 'px';
+    marker.style.top = charPxY + 'px';
+    viewport.appendChild(marker);
+
+    // Make character fully visible
+    document.getElementById('hiddenChar').style.opacity = '1';
+    document.getElementById('hiddenChar').style.filter = 'none';
+    document.getElementById('hiddenChar').style.boxShadow = '0 0 16px rgba(34,197,94,0.6)';
+    document.getElementById('hiddenChar').style.border = '2px solid #22C55E';
+
+    gameOver(true);
+  } else {
+    // WRONG
+    const marker = document.createElement('div');
+    marker.className = 'tap-marker marker-wrong';
+    marker.style.left = tapVpX + 'px';
+    marker.style.top = tapVpY + 'px';
+    viewport.appendChild(marker);
+    setTimeout(() => marker.remove(), 500);
+
+    playWrongSound();
+  }
+}
+
+// Bind events
+gameArea.addEventListener('touchstart', onPointerDown, { passive: true });
+gameArea.addEventListener('touchmove', onPointerMove, { passive: true });
+gameArea.addEventListener('touchend', onPointerUp, { passive: true });
+gameArea.addEventListener('mousedown', onPointerDown);
+gameArea.addEventListener('mousemove', onPointerMove);
+gameArea.addEventListener('mouseup', onPointerUp);
+
+// Prevent default drag on images
+document.querySelectorAll('img').forEach(img => {
+  img.addEventListener('dragstart', e => e.preventDefault());
+});
+
+// ===== INIT =====
+updateDailyUI();
+showScreen('startScreen');
+</script>
+</body>
+</html>

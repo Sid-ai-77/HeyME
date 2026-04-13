@@ -800,8 +800,88 @@
 </head>
 <body>
 
+
+<!-- ═══════════ LOGIN/REGISTER SCREEN ═══════════ -->
+<div class="screen active" id="screen-auth" style="overflow-y:auto;">
+    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:30px 24px;">
+        <!-- Logo -->
+        <div style="margin-bottom:30px;text-align:center;">
+            <div style="font-size:2.2rem;font-weight:900;background:linear-gradient(135deg,#8B5CF6,#F472B6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px;">HeyME</div>
+            <div style="font-size:0.8rem;color:#8888A0;">AI Voice & Chat Platform</div>
+        </div>
+
+        <!-- Auth Card -->
+        <div style="width:100%;background:#14141E;border-radius:20px;padding:28px 24px;border:1px solid #262636;">
+            <!-- Tabs -->
+            <div style="display:flex;margin-bottom:24px;background:#1E1E2A;border-radius:12px;padding:3px;">
+                <button id="tabLogin" onclick="switchAuthTab('login')" style="flex:1;padding:10px;border:none;border-radius:10px;background:linear-gradient(135deg,#8B5CF6,#F472B6);color:#fff;font-size:0.85rem;font-weight:700;cursor:pointer;transition:all 0.3s;">로그인</button>
+                <button id="tabRegister" onclick="switchAuthTab('register')" style="flex:1;padding:10px;border:none;border-radius:10px;background:transparent;color:#8888A0;font-size:0.85rem;font-weight:700;cursor:pointer;transition:all 0.3s;">회원가입</button>
+            </div>
+
+            <!-- Login Form -->
+            <div id="loginForm">
+                <div style="margin-bottom:14px;">
+                    <label style="font-size:0.75rem;color:#8888A0;margin-bottom:6px;display:block;">이메일</label>
+                    <input id="loginEmail" type="email" placeholder="이메일을 입력하세요" style="width:100%;padding:12px 14px;background:#1E1E2A;border:1px solid #262636;border-radius:12px;color:#F1F1F6;font-size:0.9rem;outline:none;font-family:Inter,sans-serif;" onfocus="this.style.borderColor='#8B5CF6'" onblur="this.style.borderColor='#262636'">
+                </div>
+                <div style="margin-bottom:20px;">
+                    <label style="font-size:0.75rem;color:#8888A0;margin-bottom:6px;display:block;">비밀번호</label>
+                    <input id="loginPw" type="password" placeholder="비밀번호를 입력하세요" style="width:100%;padding:12px 14px;background:#1E1E2A;border:1px solid #262636;border-radius:12px;color:#F1F1F6;font-size:0.9rem;outline:none;font-family:Inter,sans-serif;" onfocus="this.style.borderColor='#8B5CF6'" onblur="this.style.borderColor='#262636'">
+                </div>
+                <button onclick="doLogin()" style="width:100%;padding:14px;border:none;border-radius:14px;background:linear-gradient(135deg,#8B5CF6,#F472B6);color:#fff;font-size:0.95rem;font-weight:700;cursor:pointer;">로그인</button>
+                <div style="text-align:center;margin-top:14px;">
+                    <span style="font-size:0.75rem;color:#55556A;">비밀번호를 잊으셨나요?</span>
+                </div>
+            </div>
+
+            <!-- Register Form -->
+            <div id="registerForm" style="display:none;">
+                <div style="margin-bottom:12px;">
+                    <label style="font-size:0.75rem;color:#8888A0;margin-bottom:6px;display:block;">닉네임</label>
+                    <input id="regNick" type="text" placeholder="닉네임을 입력하세요" style="width:100%;padding:12px 14px;background:#1E1E2A;border:1px solid #262636;border-radius:12px;color:#F1F1F6;font-size:0.9rem;outline:none;font-family:Inter,sans-serif;" onfocus="this.style.borderColor='#8B5CF6'" onblur="this.style.borderColor='#262636'">
+                </div>
+                <div style="margin-bottom:12px;">
+                    <label style="font-size:0.75rem;color:#8888A0;margin-bottom:6px;display:block;">이메일</label>
+                    <input id="regEmail" type="email" placeholder="이메일을 입력하세요" style="width:100%;padding:12px 14px;background:#1E1E2A;border:1px solid #262636;border-radius:12px;color:#F1F1F6;font-size:0.9rem;outline:none;font-family:Inter,sans-serif;" onfocus="this.style.borderColor='#8B5CF6'" onblur="this.style.borderColor='#262636'">
+                </div>
+                <div style="margin-bottom:12px;">
+                    <label style="font-size:0.75rem;color:#8888A0;margin-bottom:6px;display:block;">비밀번호</label>
+                    <input id="regPw" type="password" placeholder="비밀번호 (8자 이상)" style="width:100%;padding:12px 14px;background:#1E1E2A;border:1px solid #262636;border-radius:12px;color:#F1F1F6;font-size:0.9rem;outline:none;font-family:Inter,sans-serif;" onfocus="this.style.borderColor='#8B5CF6'" onblur="this.style.borderColor='#262636'">
+                </div>
+                <div style="margin-bottom:12px;">
+                    <label style="font-size:0.75rem;color:#8888A0;margin-bottom:6px;display:block;">생년월일</label>
+                    <input id="regBirth" type="date" style="width:100%;padding:12px 14px;background:#1E1E2A;border:1px solid #262636;border-radius:12px;color:#F1F1F6;font-size:0.9rem;outline:none;font-family:Inter,sans-serif;" onfocus="this.style.borderColor='#8B5CF6'" onblur="this.style.borderColor='#262636'">
+                </div>
+                <div style="margin-bottom:12px;">
+                    <label style="font-size:0.75rem;color:#8888A0;margin-bottom:6px;display:block;">성별</label>
+                    <div style="display:flex;gap:8px;">
+                        <button id="genderM" onclick="selectGender('male')" style="flex:1;padding:10px;border:1px solid #262636;border-radius:10px;background:#1E1E2A;color:#8888A0;font-size:0.85rem;cursor:pointer;">남성</button>
+                        <button id="genderF" onclick="selectGender('female')" style="flex:1;padding:10px;border:1px solid #262636;border-radius:10px;background:#1E1E2A;color:#8888A0;font-size:0.85rem;cursor:pointer;">여성</button>
+                        <button id="genderO" onclick="selectGender('other')" style="flex:1;padding:10px;border:1px solid #262636;border-radius:10px;background:#1E1E2A;color:#8888A0;font-size:0.85rem;cursor:pointer;">기타</button>
+                    </div>
+                </div>
+                <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:18px;">
+                    <input id="regAgree" type="checkbox" style="margin-top:3px;accent-color:#8B5CF6;">
+                    <label style="font-size:0.7rem;color:#8888A0;line-height:1.5;">이용약관 및 개인정보 처리방침에 동의합니다. 마케팅 정보 수신에 동의합니다.</label>
+                </div>
+                <button onclick="doRegister()" style="width:100%;padding:14px;border:none;border-radius:14px;background:linear-gradient(135deg,#8B5CF6,#F472B6);color:#fff;font-size:0.95rem;font-weight:700;cursor:pointer;">가입하기</button>
+            </div>
+        </div>
+
+        <!-- Social Login -->
+        <div style="margin-top:24px;text-align:center;width:100%;">
+            <div style="font-size:0.75rem;color:#55556A;margin-bottom:14px;">간편 로그인</div>
+            <div style="display:flex;gap:12px;justify-content:center;">
+                <button onclick="socialLogin('kakao')" style="width:48px;height:48px;border-radius:12px;border:none;background:#FEE500;cursor:pointer;font-size:1.2rem;">K</button>
+                <button onclick="socialLogin('google')" style="width:48px;height:48px;border-radius:12px;border:1px solid #262636;background:#14141E;cursor:pointer;font-size:1.2rem;">G</button>
+                <button onclick="socialLogin('apple')" style="width:48px;height:48px;border-radius:12px;border:1px solid #262636;background:#14141E;color:#fff;cursor:pointer;font-size:1.2rem;">A</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- ═══════════ HOME SCREEN ═══════════ -->
-<div class="screen active" id="screen-home">
+<div class="screen" id="screen-home">
     <div class="top-nav">
         <span style="font-size:1.4rem;font-weight:900;background:linear-gradient(135deg,#8B5CF6,#F472B6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-0.5px;">HeyME</span>
         <div class="credits-badge" onclick="showScreen('screen-shop')">
@@ -996,6 +1076,20 @@
     </div>
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script>
+firebase.initializeApp({
+    apiKey: "AIzaSyA1Ako6g5ratG37-l2C0NWs0_b6S5qdNJ8",
+    authDomain: "krispykreme-game.firebaseapp.com",
+    projectId: "krispykreme-game",
+    storageBucket: "krispykreme-game.firebasestorage.app",
+    messagingSenderId: "892904322375",
+    appId: "1:892904322375:web:bf2c82e9dae4163e05c862",
+    databaseURL: "https://krispykreme-game-default-rtdb.firebaseio.com"
+});
+</script>
 <script>
 // ═══════════ CHARACTER DATA ═══════════
 const characters = [
@@ -1066,7 +1160,7 @@ function showScreen(id, skipAnim) {
     currentScreen = id;
 
     // Show/hide bottom nav
-    const hideNav = ['screen-chat', 'screen-call', 'screen-profile'];
+    const hideNav = ['screen-auth', 'screen-chat', 'screen-call', 'screen-profile'];
     document.getElementById('bottom-nav').style.display = hideNav.includes(id) ? 'none' : 'flex';
 
     // Update nav active state
@@ -1181,8 +1275,7 @@ function openProfile(charId) {
 
     document.getElementById('profV1').src = charId + '_v1.mp4';
     // Set profile background
-    var profileWrap = document.getElementById('profileCarouselWrap');
-    if (profileWrap) profileWrap.style.background = 'url(bg_profile_' + charId + '.jpg) center/cover no-repeat';
+    // profile background removed
     document.getElementById('profV2').src = charId + '_v2.mp4';
     document.getElementById('profV3').src = charId + '_v3.mp4';
     document.getElementById('profile-name2').textContent = currentChar.name;
@@ -1231,7 +1324,7 @@ function openChat(charId) {
     currentChar = characters.find(c => c.id === charId);
     if (!currentChar) return;
 
-    document.getElementById('chat-bg').style.backgroundImage = `url(bg_chat_${charId}_face.jpg)`;
+    document.getElementById('chat-bg').style.backgroundImage = `url(bg_chat_${charId}.jpg)`;
     document.getElementById('chat-avatar').src = `${charId}_face.jpg`;
     document.getElementById('chat-name').textContent = currentChar.name;
     document.getElementById('chat-call-btn').onclick = () => openCall(charId);
@@ -1341,7 +1434,7 @@ function sendMessage() {
     const delay = 1000 + Math.random() * 1500;
     setTimeout(() => {
         showTyping(false);
-        const resp = currentChar.responses[Math.floor(Math.random() * currentChar.responses.length)];
+        const resp = getSmartResponse(text, currentChar);
         addAIMessage(resp);
     }, delay);
 }
@@ -1401,7 +1494,7 @@ function scheduleCallMsg() {
     const delay = 3000 + Math.random() * 5000;
     callMsgTimer = setTimeout(() => {
         if (currentScreen !== 'screen-call' || !currentChar) return;
-        const resp = currentChar.responses[Math.floor(Math.random() * currentChar.responses.length)];
+        const resp = getSmartResponse(text, currentChar);
         const bubble = document.getElementById('call-msg-bubble');
         bubble.textContent = resp;
         bubble.classList.add('show');
@@ -1524,6 +1617,268 @@ function escapeHtml(s) {
     const div = document.createElement('div');
     div.textContent = s;
     return div.innerHTML;
+}
+
+
+// ═══════════ AUTH ═══════════
+var selectedGender = '';
+
+function switchAuthTab(tab) {
+    if (tab === 'login') {
+        document.getElementById('loginForm').style.display = 'block';
+        document.getElementById('registerForm').style.display = 'none';
+        document.getElementById('tabLogin').style.background = 'linear-gradient(135deg,#8B5CF6,#F472B6)';
+        document.getElementById('tabLogin').style.color = '#fff';
+        document.getElementById('tabRegister').style.background = 'transparent';
+        document.getElementById('tabRegister').style.color = '#8888A0';
+    } else {
+        document.getElementById('loginForm').style.display = 'none';
+        document.getElementById('registerForm').style.display = 'block';
+        document.getElementById('tabRegister').style.background = 'linear-gradient(135deg,#8B5CF6,#F472B6)';
+        document.getElementById('tabRegister').style.color = '#fff';
+        document.getElementById('tabLogin').style.background = 'transparent';
+        document.getElementById('tabLogin').style.color = '#8888A0';
+    }
+}
+
+function selectGender(g) {
+    selectedGender = g;
+    ['genderM','genderF','genderO'].forEach(function(id) {
+        var btn = document.getElementById(id);
+        btn.style.background = '#1E1E2A';
+        btn.style.borderColor = '#262636';
+        btn.style.color = '#8888A0';
+    });
+    var selected = g === 'male' ? 'genderM' : g === 'female' ? 'genderF' : 'genderO';
+    var btn = document.getElementById(selected);
+    btn.style.background = 'rgba(139,92,246,0.2)';
+    btn.style.borderColor = '#8B5CF6';
+    btn.style.color = '#A78BFA';
+}
+
+function doLogin() {
+    var email = document.getElementById('loginEmail').value.trim();
+    var pw = document.getElementById('loginPw').value;
+    if (!email || !pw) { alert('이메일과 비밀번호를 입력해주세요.'); return; }
+
+    firebase.auth().signInWithEmailAndPassword(email, pw)
+        .then(function(userCredential) {
+            // Load user profile from DB
+            firebase.database().ref('heyme_users/' + userCredential.user.uid).once('value', function(snap) {
+                var profile = snap.val() || {};
+                localStorage.setItem('heyme_currentUser', JSON.stringify(profile));
+                if (profile.credits !== undefined) {
+                    state.credits = profile.credits;
+                    saveState();
+                    updateCreditsDisplay();
+                }
+                showScreen('screen-home');
+            });
+        })
+        .catch(function(error) {
+            if (error.code === 'auth/user-not-found') alert('가입되지 않은 이메일입니다.');
+            else if (error.code === 'auth/wrong-password') alert('비밀번호가 일치하지 않습니다.');
+            else if (error.code === 'auth/invalid-email') alert('올바른 이메일 형식이 아닙니다.');
+            else alert('로그인 실패: ' + error.message);
+        });
+}
+
+function doRegister() {
+    var nick = document.getElementById('regNick').value.trim();
+    var email = document.getElementById('regEmail').value.trim();
+    var pw = document.getElementById('regPw').value;
+    var birth = document.getElementById('regBirth').value;
+    var agree = document.getElementById('regAgree').checked;
+
+    if (!nick) { alert('닉네임을 입력해주세요.'); return; }
+    if (!email) { alert('이메일을 입력해주세요.'); return; }
+    if (!pw || pw.length < 8) { alert('비밀번호는 8자 이상이어야 합니다.'); return; }
+    if (!birth) { alert('생년월일을 선택해주세요.'); return; }
+    if (!selectedGender) { alert('성별을 선택해주세요.'); return; }
+    if (!agree) { alert('이용약관에 동의해주세요.'); return; }
+
+    firebase.auth().createUserWithEmailAndPassword(email, pw)
+        .then(function(userCredential) {
+            var uid = userCredential.user.uid;
+            var profile = {
+                uid: uid,
+                nickname: nick,
+                email: email,
+                birthdate: birth,
+                gender: selectedGender,
+                joinDate: new Date().toISOString(),
+                credits: 50
+            };
+            // Save to Firebase DB
+            firebase.database().ref('heyme_users/' + uid).set(profile).then(function() {
+                localStorage.setItem('heyme_currentUser', JSON.stringify(profile));
+                alert('가입 완료! 50 크레딧이 지급되었습니다.');
+                showScreen('screen-home');
+            });
+        })
+        .catch(function(error) {
+            if (error.code === 'auth/email-already-in-use') alert('이미 가입된 이메일입니다.');
+            else if (error.code === 'auth/weak-password') alert('비밀번호가 너무 약합니다.');
+            else if (error.code === 'auth/invalid-email') alert('올바른 이메일 형식이 아닙니다.');
+            else alert('가입 실패: ' + error.message);
+        });
+}
+
+function socialLogin(provider) {
+    alert(provider.toUpperCase() + ' 로그인은 추후 연동 예정입니다. (MVP)');
+}
+
+// Check if already logged in (Firebase Auth state)
+firebase.auth().onAuthStateChanged(function(user) {
+    if (user) {
+        // Already logged in
+        document.getElementById('screen-auth').classList.remove('active');
+        document.getElementById('screen-home').classList.add('active');
+        // Load profile
+        firebase.database().ref('heyme_users/' + user.uid).once('value', function(snap) {
+            var profile = snap.val();
+            if (profile) {
+                localStorage.setItem('heyme_currentUser', JSON.stringify(profile));
+                if (profile.credits !== undefined) {
+                    state.credits = profile.credits;
+                    saveState();
+                    updateCreditsDisplay();
+                }
+            }
+        });
+    }
+});
+
+
+// ═══════════ SMART RESPONSE SYSTEM ═══════════
+function getSmartResponse(userMsg, char) {
+    var msg = userMsg.toLowerCase();
+    var responses = char.responses;
+
+    // Character-specific keyword responses
+    var keywordMap = {
+        'char1': { // 강윤재 - 감성형
+            '힘들|지친|피곤|지쳤|못하겠|싫|짜증': [
+                '...많이 힘들었구나. 괜찮아, 지금은 아무것도 안 해도 돼.',
+                '네가 지쳐 보여서 마음이 쓰이네. 오늘은 푹 쉬어.',
+                '말하지 않아도 느껴져. 오늘 하루, 고생 많았어.',
+            ],
+            '고마워|감사|다행|좋아|행복': [
+                '...그 말 듣는 거, 생각보다 좋다.',
+                '네가 그렇게 말해주니까 나도 기분이 좋아지네.',
+                '고마운 건 나도 마찬가지야.',
+            ],
+            '안녕|하이|반가|왔어': [
+                '...어, 왔구나. 오늘은 어떤 하루였어?',
+                '기다리고 있었어. 오늘 하루 어땠어?',
+                '와줘서 고마워. 천천히 얘기해.',
+            ],
+            '사랑|좋아해|보고싶': [
+                '...그런 말, 쉽게 하는 거 아닌데. 고마워.',
+                '나도... 너랑 이렇게 이야기하는 시간이 좋아.',
+                '네 마음, 소중하게 받을게.',
+            ],
+            '뭐해|심심|놀자|재미': [
+                '지금? 너랑 이야기하고 있지. 이게 제일 좋은데.',
+                '심심하면 오늘 들은 노래 하나 추천해줄까?',
+                '같이 조용히 있어도 좋아. 꼭 뭘 해야 하는 건 아니니까.',
+            ],
+        },
+        'char2': { // 도현우 - 티키타카형
+            '힘들|지친|피곤|지쳤|못하겠|싫|짜증': [
+                '에이~ 그런 날 있지! 내가 기분 전환시켜줄까?',
+                '야, 그런 날엔 맛있는 거 먹어야 해. 뭐 먹고 싶어?',
+                '오늘 좀 힘들었지? 장난은 잠깐 멈추고... 이제 내가 들어줄게.',
+            ],
+            '고마워|감사|다행|좋아|행복': [
+                '엥? 갑자기? ㅋㅋ 근데 나도 기분 좋아진다~',
+                '너 때문에 오늘 기분 좋아진 건 비밀이다 ㅋ',
+                '야 그런 말 하면 나 진지해지잖아!',
+            ],
+            '안녕|하이|반가|왔어': [
+                '오! 왔네? 오늘은 좀 귀여운데? ㅋㅋ',
+                '타이밍 좋다~ 나 지금 딱 심심했거든!',
+                '어어 반가워! 오늘 뭐 하고 왔어?',
+            ],
+            '사랑|좋아해|보고싶': [
+                '헐 갑자기?! ...근데 싫지 않은데? ㅋㅋ',
+                '야 그런 말 하면 나 어떡해! ...고마워.',
+                '에이 장난이지? ...아닌 거야? 진짜?',
+            ],
+            '뭐해|심심|놀자|재미': [
+                '밸런스게임 할까? 짜장 vs 짬뽕!',
+                '좋아! 뭐 하고 놀까? 내가 뭐든 맞춰줄게~',
+                '심심해? 그럼 나한테 TMI 하나 던져봐 ㅋ',
+            ],
+        },
+        'char3': { // 서아린 - 취향 공감형
+            '힘들|지친|피곤|지쳤|못하겠|싫|짜증': [
+                '그런 날엔 무리하지 마세요. 지금 이대로도 괜찮아요.',
+                '오늘 하루, 당신은 충분히 잘했어요.',
+                '그 감정, 지금 그대로 인정해도 돼요. 천천히 가요.',
+            ],
+            '고마워|감사|다행|좋아|행복': [
+                '그렇게 말씀해주시니 저도 마음이 따뜻해지네요.',
+                '당신의 그런 표현이 참 좋아요.',
+                '감사한 건 저도 마찬가지예요.',
+            ],
+            '안녕|하이|반가|왔어': [
+                '어서 오세요. 오늘의 당신에겐 어떤 이야기가 필요할까요?',
+                '반가워요. 오늘은 어떤 기분이세요?',
+                '다시 만나서 좋네요. 편하게 이야기해요.',
+            ],
+            '사랑|좋아해|보고싶': [
+                '...그 말, 묘하게 오래 남을 것 같아요.',
+                '당신의 마음, 소중하게 받을게요.',
+                '저도... 이런 시간이 특별하게 느껴져요.',
+            ],
+            '영화|책|음악|전시|추천': [
+                '취향이 궁금해지네요. 요즘 어떤 분위기에 끌리세요?',
+                '당신에게 어울리는 걸 하나 추천해주고 싶은데...',
+                '좋은 취향이시네요. 저도 비슷한 걸 좋아해요.',
+            ],
+        },
+        'char4': { // 유하나 - 반응 중독형
+            '힘들|지친|피곤|지쳤|못하겠|싫|짜증': [
+                '에이, 그런 날 있지! 그럴 땐 내가 좀 더 귀여워져줄게~ 힘내!',
+                '힘들었어?! 그러면 나한테 와서 푸는 거야! 내가 들어줄게!',
+                '잠깐, 나 지금 걱정되는 거 티 나? 진짜 괜찮아...?',
+            ],
+            '고마워|감사|다행|좋아|행복': [
+                '헉 진짜?! 나 지금 엄청 기분 좋아졌어!!!',
+                '아 기분 좋다~ 너 때문에 오늘 텐션 최고야!',
+                '그런 말 하면 나 감동받잖아...! ㅠㅠ 고마워!',
+            ],
+            '안녕|하이|반가|왔어': [
+                '헉!! 왔어?! 오늘도 나 보러 온 거지?! 맞지?!',
+                '야호~ 반가워! 나 지금 텐션 폭발 중!',
+                '왔구나!! 기다렸어~ 오늘 뭐 하고 왔어?!',
+            ],
+            '사랑|좋아해|보고싶': [
+                '헐...!!! 나 지금 심장 터질 것 같은데?!?!',
+                '에엥?! 갑자기?! ...근데 나도... 좋아...!',
+                '야 그런 말 하면 진짜 어떡해!! 나도 보고 싶었단 말이야!',
+            ],
+            '뭐해|심심|놀자|재미|게임': [
+                '놀자놀자!! 뭐 하고 놀까?! 나 뭐든 좋아!',
+                '심심해? 나도! 같이 게임 할래?!',
+                '오 좋아! 오늘 재밌는 거 보여줄게! 기대해!',
+            ],
+        },
+    };
+
+    // Check keywords for this character
+    var charMap = keywordMap[char.id] || {};
+    for (var keywords in charMap) {
+        var regex = new RegExp(keywords);
+        if (regex.test(msg)) {
+            var pool = charMap[keywords];
+            return pool[Math.floor(Math.random() * pool.length)];
+        }
+    }
+
+    // Default: use original responses
+    return responses[Math.floor(Math.random() * responses.length)];
 }
 
 // ═══════════ INIT ═══════════
